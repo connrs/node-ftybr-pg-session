@@ -7,13 +7,8 @@ require.cache[require.resolve('sessions-pg-store')] = { exports: PgStoreMock };
 require.cache[require.resolve('sessions')] = { exports: SessionsMock };
 pgSession = require('..');
 
-test('Throws error if no client set', function (t) {
-  t.plan(1);
-  t.throws(pgSession, /No client provided to PG session middleware/);
-});
-
 test('Sets store and store options to sessions', function (t) {
-  var client = {};
+  var req = {}, res = {};
   t.plan(2);
   SessionsMock.prototype.init = function (Store, options, storeOptions) {
     t.equal(Store, PgStoreMock);
@@ -22,13 +17,16 @@ test('Sets store and store options to sessions', function (t) {
       table: 'sess'
     });
   };
-  pgSession(client, { table: 'sess' });
+  SessionsMock.prototype.httpRequest = function () {};
+  req.pgClient = {};
+  pgSession({ table: 'sess' })(req, res, function () {});
 });
 
 test('Middleware sets session to request', function (t) {
-  var req = {};
+  var req = {
+    dbClient: {}
+  };
   var res = {};
-  var client = {};
   var sess = {
     test_a: 1,
     test_b: 9
@@ -39,28 +37,29 @@ test('Middleware sets session to request', function (t) {
   SessionsMock.prototype.httpRequest = function (req, res, done) {
     done(null, sess);
   };
-  pgSession(client, {})(req, res, function (err) {
+  pgSession({})(req, res, function (err) {
     t.error(err);
     t.deepEqual(req.session, sess);
   });
 });
 
 test('Middleware returns error', function (t) {
-  var req = {};
+  var req = {
+    dbClient: {}
+  };
   var res = {};
-  var client = {};
 
   t.plan(1);
   SessionsMock.prototype.init = function() {};
   SessionsMock.prototype.httpRequest = function (req, res, done) {
     done(new Error('SESSION PGSQL ERROR'));
   };
-  pgSession(client, {})(req, res, function (err) {
+  pgSession({})(req, res, function (err) {
     t.equal(err.message, 'SESSION PGSQL ERROR');
   });
 });
 
 test('Options argument is optional', function (t) {
-  pgSession({});
+  pgSession();
   t.end();
 });
