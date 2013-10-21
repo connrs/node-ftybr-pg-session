@@ -59,3 +59,8 @@ test('Middleware returns error', function (t) {
     t.equal(err.message, 'SESSION PGSQL ERROR');
   });
 });
+
+test('Options argument is optional', function (t) {
+  pgSession({});
+  t.end();
+});
