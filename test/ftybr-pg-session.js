@@ -2,6 +2,7 @@ var test = require('tape');
 var PgStoreMock = function () { PgStoreMock.init.apply(null, Array.prototype.slice.call(arguments)); };
 var SessionsMock = function () { this.init.apply(this, Array.prototype.slice.call(arguments)); };
 var pgSession;
+var conString = 'postgres://postgres:postgres@postgres/postgres';
 
 require.cache[require.resolve('sessions-pg-store')] = { exports: PgStoreMock };
 require.cache[require.resolve('sessions')] = { exports: SessionsMock };
@@ -13,13 +14,13 @@ test('Sets store and store options to sessions', function (t) {
   SessionsMock.prototype.init = function (Store, options, storeOptions) {
     t.equal(Store, PgStoreMock);
     t.deepEqual(storeOptions, {
-      client: {},
+      pg: {},
+      conString: conString,
       table: 'sess'
     });
   };
   SessionsMock.prototype.httpRequest = function () {};
-  req.pgClient = {};
-  pgSession({ table: 'sess' })(req, res, function () {});
+  pgSession({ pg: {}, conString: conString, table: 'sess' })(req, res, function () {});
 });
 
 test('Middleware sets session to request', function (t) {
