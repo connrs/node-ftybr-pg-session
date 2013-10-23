@@ -4,7 +4,7 @@
   },
   "name": "ftybr-pg-session",
   "description": "Ftybr middleware for Postgresql sessions",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/connrs/node-ftybr-pg-session.git"
@@ -22,7 +22,7 @@
   "author": "connrs",
   "dependencies": {
     "sessions": "0.0.2-7",
-    "sessions-pg-store": "0.2.1"
+    "sessions-pg-store": "0.2.2"
   },
   "devDependencies": {
     "tape": "~2.0.0"
