@@ -64,3 +64,13 @@ test('Options argument is optional', function (t) {
   pgSession();
   t.end();
 });
+
+test('Session options sets expires to null', function (t) {
+  t.plan(1);
+  SessionsMock.prototype.init = function (Store, options, storeOptions) {
+    t.deepEqual(options, {
+      expires: null
+    });
+  };
+  pgSession({ pg: {}, conString: conString, table: 'sess' });
+});
